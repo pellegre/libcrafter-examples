@@ -58,7 +58,7 @@ int main() {
 		}
 	}
 
-	tcp_connection.Reset();
+	tcp_connection.Close();
 
 	/* Clear everything */
 	clear_forward(dst_ip, src_ip, dstport, srcport);

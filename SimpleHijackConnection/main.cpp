@@ -15,7 +15,6 @@ void start_block(const string& dst_ip, const string& src_ip, int dst_port, int s
 void clear_block(const string& dst_ip, const string& src_ip, int dst_port, int src_port);
 
 /* Put and clear IP forwarding */
-void ip_forward();
 void clear_forward();
 
 /* Source port that we have to find out */
@@ -101,8 +100,8 @@ int main() {
 		}
 	}
 
-	/* Reset spoofed connection with the server after we send our commands */
-	tcp_v_to_s.Reset();
+	/* Close the spoofed connection with the server after we send our commands */
+	tcp_v_to_s.Close();
 
 	/* Clear everything */
 	clear_block(dst_ip,src_ip,dstport,srcport);
