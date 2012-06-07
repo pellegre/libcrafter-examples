@@ -20,11 +20,11 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "wlan0";
+	string iface = "eth0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string dns_server = "192.168.0.1";
+	string dns_server = "10.73.2.101";
 
 	/* Create an IP header */
 	IP ip_header;
@@ -47,7 +47,7 @@ int main() {
 	dns_header.SetIdentification(RNG16());
 
 	/* Create a DNSQuery class. This class IS NOT a <Layer> class */
-	DNS::DNSQuery dns_query("www.google.com");
+	DNS::DNSQuery dns_query("www.google.com.ar");
 	/* Set the type */
 	dns_query.SetType(DNS::TypeA);
 
