@@ -24,7 +24,7 @@ int main() {
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string dns_server = "208.67.220.220";
+	string dns_server = "192.168.0.1";
 
 	/* Create an IP header */
 	IP ip_header;
@@ -47,7 +47,7 @@ int main() {
 	dns_header.SetIdentification(RNG16());
 
 	/* Create a DNSQuery class. This class IS NOT a <Layer> class */
-	DNS::DNSQuery dns_query("www.google.com.ar");
+	DNS::DNSQuery dns_query("www.google.com");
 	/* Set the type */
 	dns_query.SetType(DNS::TypeA);
 

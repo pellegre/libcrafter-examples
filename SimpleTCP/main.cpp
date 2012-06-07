@@ -30,10 +30,10 @@ int main() {
 	string iface = "wlan0";
 
 	/* Set connection data */
-	string dst_ip = "192.168.1.220"; // <-- Destination IP
+	string dst_ip = "www.google.com.ar"; // <-- Destination IP
 	string src_ip = GetMyIP(iface);   // <-- Our IP
 	short_word srcport = RNG16();     // <-- Some Random source port
-	short_word dstport = 1234;       // <-- Destination Port
+	short_word dstport = 80;       // <-- Destination Port
 
 	/* Initialize connection */
 	TCPConnection tcp_connection(src_ip,dst_ip,srcport,dstport,iface);
@@ -72,20 +72,24 @@ int main() {
 }
 
 void iptables_reset(const string& dst_ip, int dst_port, int src_port) {
-
-	/* Drop packets received from the destination IP address */
-	system(string("/sbin/iptables  -A INPUT -s " + dst_ip +
+	string rule = "/sbin/iptables  -A INPUT -s " + dst_ip +
 			      " -p tcp --sport " + StrPort(dst_port) + " --dport " + StrPort(src_port) +
-			      " -j DROP").c_str());
+			      " -j DROP";
+
+	cout << rule << endl;
+	/* Drop packets received from the destination IP address */
+	system(rule.c_str());
 
 	/* Remember that libcrafter doesn't mind about local firewalls rules... */
 }
 
 void iptables_clear_reset(const string& dst_ip, int dst_port, int src_port) {
-
-	/* Drop packets received from the destination IP address */
-	system(string("/sbin/iptables  -D INPUT -s " + dst_ip +
+	const char* rule = string("/sbin/iptables  -D INPUT -s " + dst_ip +
 			      " -p tcp --sport " + StrPort(dst_port) + " --dport " + StrPort(src_port) +
-			      " -j DROP").c_str());
+			      " -j DROP").c_str();
+
+	cout << rule << endl;
+	/* Drop packets received from the destination IP address */
+	system(rule);
 
 }

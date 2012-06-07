@@ -59,7 +59,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.1.*");             // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>* net = ParseIP("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                        // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ARP requests */

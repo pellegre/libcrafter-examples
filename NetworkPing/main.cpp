@@ -21,7 +21,9 @@ int main() {
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
+	string MyMAC = GetMyMAC(iface);
 	cout << "[@] My IP address is  : " << MyIP  << endl;
+	cout << "[@] My MAC address is  : " << MyMAC  << endl;
 
 	/* --------- Common data to all headers --------- */
 
@@ -40,7 +42,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.1.*");        // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>* net = ParseIP("192.168.0.*");        // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                      // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
@@ -70,11 +72,11 @@ int main() {
 	 * 32 (nthreads) -> Number of threads for distributing the packets
 	 *                  (tunable, the best value depends on your
 	 *                   network an processor). 32 is good :-)
-	 * 2  (timeout)  -> Timeout in seconds for waiting an answer
+	 * 0.1 (timeout) -> Timeout in seconds for waiting an answer
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ICMP echoes. Wait..." << endl;
-	PacketContainer* pongs_packets = SendRecv(&pings_packets,iface,48,1,2);
+	PacketContainer* pongs_packets = SendRecv(&pings_packets,iface,48,0.1,2);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*

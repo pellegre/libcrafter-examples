@@ -77,9 +77,9 @@ int main() {
 	string iface = "wlan0";
 
 	/* Host A IP address */
-	string victim_net = "192.168.1.*";
+	string victim_net = "192.168.0.106";
 	/* HOst B IP address */
-	string router = "192.168.1.1";
+	string router = "192.168.0.1";
 
 	/* ----------------------------------------------------------------------- */
 

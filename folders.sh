@@ -2,7 +2,12 @@
 FOLDERS="HelloWorld
          PayloadHelloWorld
          BasicSend
+         ExampleIPv6
+         CombineIPv4IPv6
+         DumpPcap
+         DHCPRequest
          Ping
+         TimeExceeded
          BasicPingPong
 	 FilterSendRecv
          NetworkPing
@@ -18,5 +23,7 @@ FOLDERS="HelloWorld
          TCPTraceroute
          DNSSpoof
          SimpleTCP
+         SimpleSpoofConnection
+         SimpleHijackConnection
         "
 

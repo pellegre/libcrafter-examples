@@ -50,7 +50,6 @@ int main() {
 	ip_header.SetSourceIP("0.0.0.0");
 	ip_header.SetDestinationIP("255.255.255.255");
 	ip_header.SetFlags(0x0);
-	ip_header.SetDifSerCP(0x10);
 
 	/* Create a UDP header */
 	UDP udp_header;
@@ -99,7 +98,7 @@ int main() {
 
 	/* Create a packet... */
 	Packet packet = ether_header / ip_header / udp_header / dhcp_header;
-
+	packet.Print();
 	/* Send the packet */
 	Packet* rcv = packet.SendRecv(iface,2,3,"udp and src port 67 and dst port 68");
 

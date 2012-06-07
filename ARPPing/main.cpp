@@ -47,7 +47,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.1.*");             // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>* net = ParseIP("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                        // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ARP requests */
@@ -76,11 +76,11 @@ int main() {
 	 * 48 (nthreads) -> Number of threads for distributing the packets
 	 *                  (tunneable, the best value depends on your
 	 *                   network an processor). 32 is good :-)
-	 * 1  (timeout)  -> Timeout in seconds for waiting an answer
+	 * 0.1  (timeout)-> Timeout in seconds for waiting an answer
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ARP Requests. Wait..." << endl;
-	PacketContainer* replies_packets = SendRecv(&request_packets,iface,48,1,2);
+	PacketContainer* replies_packets = SendRecv(&request_packets,iface,48,0.1,4);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*

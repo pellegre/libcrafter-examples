@@ -54,7 +54,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.1.*");        // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>* net = ParseIP("192.168.0.*");        // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                      // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
@@ -88,7 +88,7 @@ int main() {
 	 * pings_packets container. Now we can Send 'Em All.
 	 */
 	for(int i = 0 ; i < 3 ; i++) {
-		Send(&pings_packets,iface,48);
+		Send(&pings_packets,iface,16);
 	}
 
 	/* ... and close the sniffer */

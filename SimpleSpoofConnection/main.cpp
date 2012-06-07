@@ -23,15 +23,15 @@ int main() {
 	string iface = "wlan0";
 
 	/* Set connection data */
-	string dst_ip = "192.168.1.3";  // <-- Destination IP
-	string src_ip = "192.168.1.9";    // <-- Spoof IP (not our IP address)
+	string dst_ip = "www.google.com.ar";  // <-- Destination IP
+	string src_ip = "192.168.0.108";    // <-- Spoof IP (not our IP address)
 	short_word srcport = RNG16();     // <-- Some Random source port
-	short_word dstport = 1234;        // <-- Destination Port
+	short_word dstport = 80;        // <-- Destination Port
 
 	start_forward(dst_ip, src_ip, dstport, srcport);
 
 	/* Begin the spoofing */
-	ARPContext* arp_context = ARPSpoofingReply(dst_ip,src_ip,iface);
+	ARPContext* arp_context = ARPSpoofingReply("192.168.0.1",src_ip,iface);
 
 	/* Print some info */
 	PrintARPContext(*arp_context);
