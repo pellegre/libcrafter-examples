@@ -5,6 +5,7 @@ FOLDERS="HelloWorld
          ExampleIPv6
          CombineIPv4IPv6
          DumpPcap
+         TCPOptions
          DHCPRequest
          Ping
          TimeExceeded

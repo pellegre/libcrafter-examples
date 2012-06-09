@@ -80,7 +80,7 @@ int main() {
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ARP Requests. Wait..." << endl;
-	PacketContainer* replies_packets = SendRecv(&request_packets,iface,48,0.1,4);
+	PacketContainer* replies_packets = request_packets.SendRecv(iface,0.1,2,48);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*
@@ -107,13 +107,10 @@ int main() {
 	cout << "[@] " << counter << " hosts up. " << endl;
 
 	/* Delete the container with the ARP requests */
-	for(it_pck = request_packets.begin() ; it_pck < request_packets.end() ; it_pck++)
-		delete (*it_pck);
+	request_packets.Clear();
 
 	/* Delete the container with the reponses, if there is one (check the NULL pointer) */
-	for(it_pck = replies_packets->begin() ; it_pck < replies_packets->end() ; it_pck++)
-		if((*it_pck)) delete (*it_pck);
-
+	replies_packets->Clear();
 	/* Delete the container itself */
 	delete replies_packets;
 

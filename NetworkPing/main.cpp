@@ -69,14 +69,14 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * pings_packets container. Now we can Send 'Em All.
 	 *
-	 * 32 (nthreads) -> Number of threads for distributing the packets
+	 * 48 (nthreads) -> Number of threads for distributing the packets
 	 *                  (tunable, the best value depends on your
 	 *                   network an processor). 32 is good :-)
 	 * 0.1 (timeout) -> Timeout in seconds for waiting an answer
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ICMP echoes. Wait..." << endl;
-	PacketContainer* pongs_packets = SendRecv(&pings_packets,iface,48,0.1,2);
+	PacketContainer* pongs_packets = pings_packets.SendRecv(iface,0.1,2,48);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*
@@ -108,13 +108,10 @@ int main() {
 	/* Now, because we are good programmers, clean everything before exit */
 
 	/* Delete the container with the PINGS packets */
-	for(it_pck = pings_packets.begin() ; it_pck < pings_packets.end() ; it_pck++)
-		delete (*it_pck);
+	pings_packets.Clear();
 
 	/* Delete the container with the responses, if there is one (check the NULL pointer) */
-	for(it_pck = pongs_packets->begin() ; it_pck < pongs_packets->end() ; it_pck++)
-		if((*it_pck)) delete (*it_pck);
-
+	pongs_packets->Clear();
 	/* Delete the container itself */
 	delete pongs_packets;
 

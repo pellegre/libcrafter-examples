@@ -50,7 +50,7 @@ int main() {
 	 * captured satisfies the filter expression (the default behavior is to
 	 * print the packets to STDOUT).
 	 */
-	Sniffer sniff("ip6",iface);//,PacketHandler);
+	Sniffer sniff("tcp and port 22",iface,PacketHandler);
 
 	/* Now, start the capture (five packets) */
 	sniff.Capture(5);

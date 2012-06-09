@@ -16,7 +16,7 @@ using namespace Crafter;
 
 /* This functions send a TCP SYN and check if a port if open */
 void SendAndRecvTCP(IPLayer* ip_layer, const string& iface, const string& src_ip, const string& dst_ip, short_word port) {
-	/* Put the IP destination */
+	/* Put the IP source and destination */
 	ip_layer->SetSourceIP(src_ip);
 	ip_layer->SetDestinationIP(dst_ip);
 

@@ -121,7 +121,7 @@ int main() {
 	}
 
 	/* Dump the tcp packets to a pcap file */
-	DumpPcap("tcp.pcap",&tcp_packets);
+	tcp_packets.DumpPcap("tcp.pcap");
 
 	/* Delete the container with the PINGS packets */
 	for(it_pck = tcp_packets.begin() ; it_pck < tcp_packets.end() ; it_pck++)
@@ -155,6 +155,9 @@ int main() {
 		(*it_pck)->Print();
 
 	/* And here you should clean all this stuff... */
+	request_packets_read.Clear();
+	tcp_packets_read.Clear();
+	tcp_filter_read.Clear();
 
 	/* Clean up library stuff */
 	CleanCrafter();

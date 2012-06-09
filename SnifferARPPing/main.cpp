@@ -91,10 +91,11 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * request_packets container. Now we can Send 'Em All (3 times).
 	 */
-	for(int i = 0 ; i < 3 ; i++) {
-		Send(&request_packets,iface,48);
-		sleep(1);
-	}
+	//for(int i = 0 ; i < 3 ; i++)
+		request_packets.Send(iface,48);
+
+	/* Wait a second to sniff all the responses... */
+	sleep(1);
 
 	/* ... and close the sniffer */
 	sniff.Cancel();
@@ -106,9 +107,7 @@ int main() {
 				"with MAC address " << (*it_host).second << endl;
 
 	/* Delete the container with the ARP requests */
-	PacketContainer::iterator it_pck;
-	for(it_pck = request_packets.begin() ; it_pck < request_packets.end() ; it_pck++)
-		delete (*it_pck);
+	request_packets.Clear();
 
 	/* Delete the IP address container */
 	delete net;

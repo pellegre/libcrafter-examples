@@ -87,9 +87,11 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * pings_packets container. Now we can Send 'Em All.
 	 */
-	for(int i = 0 ; i < 3 ; i++) {
-		Send(&pings_packets,iface,16);
-	}
+	//for(int i = 0 ; i < 3 ; i++)
+		pings_packets.Send(iface);
+
+	/* Wait to sniff all the packets... */
+	sleep(1);
 
 	/* ... and close the sniffer */
 	sniff.Cancel();
@@ -101,9 +103,7 @@ int main() {
 		cout << "[@] Host " << (*it_host) << " up." << endl;
 
 	/* Delete the container with the PINGS packets */
-	PacketContainer::iterator it_pck;
-	for(it_pck = pings_packets.begin() ; it_pck < pings_packets.end() ; it_pck++)
-		delete (*it_pck);
+	pings_packets.Clear();
 
 	/* Delete the IP address container */
 	delete net;

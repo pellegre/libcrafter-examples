@@ -30,10 +30,10 @@ int main() {
 	string iface = "wlan0";
 
 	/* Set connection data */
-	string dst_ip = "www.google.com.ar"; // <-- Destination IP
+	string dst_ip = "192.168.0.108";  // <-- Destination IP
 	string src_ip = GetMyIP(iface);   // <-- Our IP
 	short_word srcport = RNG16();     // <-- Some Random source port
-	short_word dstport = 80;       // <-- Destination Port
+	short_word dstport = 80;          // <-- Destination Port
 
 	/* Initialize connection */
 	TCPConnection tcp_connection(src_ip,dst_ip,srcport,dstport,iface);
