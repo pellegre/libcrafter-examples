@@ -103,7 +103,7 @@ int main() {
 		cout << "[@] Host " << (*it_host) << " up." << endl;
 
 	/* Delete the container with the PINGS packets */
-	pings_packets.Clear();
+	pings_packets.ClearPackets();
 
 	/* Delete the IP address container */
 	delete net;

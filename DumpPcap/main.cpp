@@ -155,9 +155,9 @@ int main() {
 		(*it_pck)->Print();
 
 	/* And here you should clean all this stuff... */
-	request_packets_read.Clear();
-	tcp_packets_read.Clear();
-	tcp_filter_read.Clear();
+	request_packets_read.ClearPackets();
+	tcp_packets_read.ClearPackets();
+	tcp_filter_read.ClearPackets();
 
 	/* Clean up library stuff */
 	CleanCrafter();

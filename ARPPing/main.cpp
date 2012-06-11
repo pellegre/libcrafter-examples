@@ -107,10 +107,10 @@ int main() {
 	cout << "[@] " << counter << " hosts up. " << endl;
 
 	/* Delete the container with the ARP requests */
-	request_packets.Clear();
+	request_packets.ClearPackets();
 
 	/* Delete the container with the reponses, if there is one (check the NULL pointer) */
-	replies_packets->Clear();
+	replies_packets->ClearPackets();
 	/* Delete the container itself */
 	delete replies_packets;
 

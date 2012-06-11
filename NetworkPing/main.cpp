@@ -42,7 +42,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.0.*");        // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>* net = ParseIP("192.168.1.*");        // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                      // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
@@ -108,10 +108,10 @@ int main() {
 	/* Now, because we are good programmers, clean everything before exit */
 
 	/* Delete the container with the PINGS packets */
-	pings_packets.Clear();
+	pings_packets.ClearPackets();
 
 	/* Delete the container with the responses, if there is one (check the NULL pointer) */
-	pongs_packets->Clear();
+	pongs_packets->ClearPackets();
 	/* Delete the container itself */
 	delete pongs_packets;
 

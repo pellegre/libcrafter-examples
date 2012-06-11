@@ -107,7 +107,7 @@ int main() {
 				"with MAC address " << (*it_host).second << endl;
 
 	/* Delete the container with the ARP requests */
-	request_packets.Clear();
+	request_packets.ClearPackets();
 
 	/* Delete the IP address container */
 	delete net;

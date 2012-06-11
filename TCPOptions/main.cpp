@@ -22,7 +22,7 @@ int main() {
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string DstIP = "192.168.0.108";
+	string DstIP = "192.168.1.5";
 
 	Ethernet ether_header;
 
@@ -57,14 +57,6 @@ int main() {
 	TCPOptionTimestamp tstamp;
 	tstamp.SetValue(398303815);
 
-	/*
-	 * Padding using NOPs and the EOL of option are also a layer class
-	 * TCPOptionPad is a class with only one field (Kind field).
-	 * TCPOption padding ALWAYS should be done with object of the TCPOptionPad class.
-	 */
-	TCPOptionPad nop; nop.SetKind(1);
-	TCPOptionPad eol; eol.SetKind(0);
-
 	/* Create a payload */
 	RawLayer raw_header;
 	raw_header.SetPayload("SomeTCPPayload\n");
@@ -75,7 +67,9 @@ int main() {
 					maxseg /            // 4  bytes
 					wind /              // 3  bytes
 					tstamp /            // 10 bytes
-					nop / nop / eol /   // 3  bytes <-- Padded to a multiple of 32 bits
+					TCPOption::NOP /    // 3  bytes <-- Padded to a multiple of 32 bits
+					TCPOption::NOP /
+					TCPOption::EOL /
 					/* END Option  TOTAL = 20 bytes */
 					raw_header;
 
