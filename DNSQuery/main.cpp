@@ -20,11 +20,11 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "eth0";
+	string iface = "wlan0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string dns_server = "10.73.2.101";
+	string dns_server = "192.168.0.1";
 
 	/* Create an IP header */
 	IP ip_header;
@@ -61,6 +61,7 @@ int main() {
 	Packet* rcv = packet.SendRecv(iface);
 
 	if(rcv) {
+		rcv->Print();
 		/*
 		 * An application protocol is always get from the network as a raw layer. There is
 		 * no way to know which protocol is on the top of a transport layer (unless we rely on

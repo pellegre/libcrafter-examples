@@ -10,10 +10,12 @@
 #include <string>
 #include <crafter.h>
 
+
 /* Collapse namespaces */
 using namespace std;
 using namespace Crafter;
 
+void PrintPacket(Packet *p){p->Print();}
 int main() {
 
 	/* Init the library */

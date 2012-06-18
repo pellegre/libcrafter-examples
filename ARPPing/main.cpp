@@ -47,14 +47,14 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
+	vector<string> net = GetIPs("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                        // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ARP requests */
-	PacketContainer request_packets;
+	vector<Packet*> request_packets;
 
 	/* Iterate to access each string that defines an IP address */
-	for(it_IP = net->begin() ; it_IP != net->end() ; it_IP++) {
+	for(it_IP = net.begin() ; it_IP != net.end() ; it_IP++) {
 
 		arp_header.SetTargetIP(*it_IP);                    // <-- Set a destination IP address on ARP header
 
@@ -80,7 +80,8 @@ int main() {
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ARP Requests. Wait..." << endl;
-	PacketContainer* replies_packets = request_packets.SendRecv(iface,0.1,2,48);
+	vector<Packet*> replies_packets(request_packets.size());
+	SendRecv(request_packets.begin(), request_packets.end(), replies_packets.begin(), iface, 0.1, 2, 48);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*
@@ -89,9 +90,9 @@ int main() {
 	 * the SendRecv functions returns) we can iterate over each
 	 * reply packet, if any.
 	 */
-	PacketContainer::iterator it_pck;
+	vector<Packet*>::iterator it_pck;
 	int counter = 0;
-	for(it_pck = replies_packets->begin() ; it_pck < replies_packets->end() ; it_pck++) {
+	for(it_pck = replies_packets.begin() ; it_pck < replies_packets.end() ; it_pck++) {
 		/* Check if the pointer is not NULL */
 		Packet* reply_packet = (*it_pck);
 		if(reply_packet) {
@@ -107,15 +108,10 @@ int main() {
 	cout << "[@] " << counter << " hosts up. " << endl;
 
 	/* Delete the container with the ARP requests */
-	request_packets.ClearPackets();
+	ClearContainer(request_packets);
 
 	/* Delete the container with the reponses, if there is one (check the NULL pointer) */
-	replies_packets->ClearPackets();
-	/* Delete the container itself */
-	delete replies_packets;
-
-	/* Delete the IP address container */
-	delete net;
+	ClearContainer(replies_packets);
 
 	/* Clean up library stuff */
 	CleanCrafter();

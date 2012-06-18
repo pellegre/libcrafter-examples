@@ -22,7 +22,7 @@ int main() {
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string DstIP = "192.168.1.5";
+	string DstIP = "192.168.0.108";
 
 	Ethernet ether_header;
 
@@ -36,12 +36,17 @@ int main() {
 	ip_header.SetSourceIP(MyIP);
 	ip_header.SetDestinationIP(DstIP);
 
+	IPOption security;
+	security.SetOption(8);
+	security.SetPayload("\x1\x1");
+
 	/* Create a UDP header */
 	TCP tcp_header;
 
 	/* Set the source and destination ports */
 	tcp_header.SetSrcPort(RNG16());
 	tcp_header.SetDstPort(22);
+	tcp_header.SetSeqNumber(RNG32());
 	tcp_header.SetFlags(TCP::SYN);
 
 	/* Max segment size option */
@@ -62,7 +67,8 @@ int main() {
 	raw_header.SetPayload("SomeTCPPayload\n");
 
 	/* Create a packet... */
-	Packet packet = ether_header / ip_header / tcp_header /
+	Packet packet = ether_header / ip_header / security / security / security /
+			        tcp_header /
 			        /* START Option (padding should be controlled by the user) */
 					maxseg /            // 4  bytes
 					wind /              // 3  bytes
@@ -76,6 +82,8 @@ int main() {
 	/* Send the packet, and wait for an answer.... */
 	Packet* pck_rcv = packet.SendRecv(iface,0.1,3);
 
+	packet.Print();
+
 	if(pck_rcv) {
 
 		/* Print all the received packet */
@@ -85,6 +93,7 @@ int main() {
 
 		/* We want to check some option of the SYN/ACK received */
 		if(rcv_tcp->GetACK() && rcv_tcp->GetSYN()) {
+
 			cout << "[@] Port open, parsing options... " << endl;
 			LayerStack::iterator it;
 

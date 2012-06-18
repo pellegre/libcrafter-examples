@@ -8,7 +8,11 @@
  */
 
 #include <iostream>
+#include <vector>
+#include <list>
+#include <deque>
 #include <string>
+#include <tr1/memory>
 #include <crafter.h>
 
 /* Collapse namespaces */
@@ -42,38 +46,24 @@ int main() {
     arp_header.SetSenderMAC(MyMAC);
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.0.*");
+	vector<string> net = GetIPs("192.168.0.*");
 	vector<string>::iterator it_IP;
 
 	/* Create a PacketContainer to hold all the ARP requests */
-	PacketContainer request_packets;
+	typedef tr1::shared_ptr<Packet> packet_ptr;
+	vector<packet_ptr> request_packets;
 
 	/* Iterate to access each string that defines an IP address */
-	for(it_IP = net->begin() ; it_IP != net->end() ; it_IP++) {
+	for(it_IP = net.begin() ; it_IP != net.end() ; it_IP++) {
 
 		arp_header.SetTargetIP(*it_IP);
 
-		/* Create a packet on the heap */
-		Packet* packet = new Packet;
-
-		/* Push the layers */
-		packet->PushLayer(ether_header);
-		packet->PushLayer(arp_header);
-
 		/* Finally, push the packet into the container */
-		request_packets.push_back(packet);
+		request_packets.push_back(packet_ptr(new Packet(ether_header / arp_header)));
 	}
 
 	/* Dump the request to a pcap file */
-	DumpPcap("arp.pcap",&request_packets);
-
-	PacketContainer::iterator it_pck;
-	/* Delete the container with the ARP requests */
-	for(it_pck = request_packets.begin() ; it_pck < request_packets.end() ; it_pck++)
-		delete (*it_pck);
-
-	/* Delete the IP address container */
-	delete net;
+	DumpPcap(request_packets.begin(), request_packets.end(), "arp.pcap");
 
 	/* ++++++++++++++++++++ TCP TRACEROUTE +++++++++++++++++++++ */
 
@@ -92,7 +82,7 @@ int main() {
 	tcp_header.SetWindowsSize(5480);
 
 	/* Create a PacketContainer to hold all the TCP packets */
-	PacketContainer tcp_packets;
+	list<packet_ptr> tcp_packets;
 
 	short_word port = 1;
 	/* Create a packet for each TTL */
@@ -115,49 +105,50 @@ int main() {
 		packet->PushLayer(tcp_header);
 
 		/* Push the packet into the container */
-		tcp_packets.push_back(packet);
+		tcp_packets.push_back(packet_ptr(packet));
 
 		port++;
 	}
 
 	/* Dump the tcp packets to a pcap file */
-	tcp_packets.DumpPcap("tcp.pcap");
-
-	/* Delete the container with the PINGS packets */
-	for(it_pck = tcp_packets.begin() ; it_pck < tcp_packets.end() ; it_pck++)
-		delete (*it_pck);
+	DumpPcap(tcp_packets.begin(), tcp_packets.end(), "tcp.pcap");
 
 	/* Now read the data we just put on those files */
-	PacketContainer* request_packets_read = ReadPcap("arp.pcap");
-	PacketContainer* tcp_packets_read = ReadPcap("tcp.pcap");
+	vector<packet_ptr> request_packets_read;
+	ReadPcap(&request_packets_read,"arp.pcap");
+	list<packet_ptr> tcp_packets_read;
+	ReadPcap(&tcp_packets_read,"tcp.pcap");
 	/* We can set a filter too :-) */
-	PacketContainer* tcp_filter_read = ReadPcap("tcp.pcap","tcp and port 10");
+	deque<packet_ptr> tcp_filter_read;
+	ReadPcap(&tcp_filter_read,"tcp.pcap","tcp and port 10");
+
+	vector<packet_ptr>::iterator it_vec;
+	list<packet_ptr>::iterator it_lst;
+	deque<packet_ptr>::iterator it_deq;
 
 	/* Print first 5 packets */
 	cout << endl;
 	cout << "[@] ++++++++++++++++ ARP requests : " << endl;
 	cout << endl;
-	for(it_pck = request_packets_read->begin() ; it_pck < request_packets_read->begin() + 5 ; it_pck++)
-		(*it_pck)->Print();
+	for(it_vec = request_packets_read.begin() ; it_vec < request_packets_read.begin() + 5 ; it_vec++)
+		(*it_vec)->Print();
 
 	/* Print first 5 packets */
 	cout << endl;
 	cout << "[@] ++++++++++++++++ TCP packets : " << endl;
 	cout << endl;
-	for(it_pck = tcp_packets_read->begin() ; it_pck < tcp_packets_read->begin() + 5 ; it_pck++)
-		(*it_pck)->Print();
+
+	list<packet_ptr>::iterator end_pck = tcp_packets_read.begin();
+	advance(end_pck,5);
+	for(it_lst = tcp_packets_read.begin() ; it_lst != end_pck ; it_lst++)
+		(*it_lst)->Print();
 
 	/* Print all packets filtered... */
 	cout << endl;
 	cout << "[@] ++++++++++++++++ TCP filter (only port 10) : " << endl;
 	cout << endl;
-	for(it_pck = tcp_filter_read->begin() ; it_pck < tcp_filter_read->end() ; it_pck++)
-		(*it_pck)->Print();
-
-	/* And here you should clean all this stuff... */
-	request_packets_read.ClearPackets();
-	tcp_packets_read.ClearPackets();
-	tcp_filter_read.ClearPackets();
+	for(it_deq = tcp_filter_read.begin() ; it_deq != tcp_filter_read.end() ; it_deq++)
+		(*it_deq)->Print();
 
 	/* Clean up library stuff */
 	CleanCrafter();

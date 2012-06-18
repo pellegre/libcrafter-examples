@@ -5,6 +5,7 @@
  */
 #include <iostream>
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include <crafter.h>
 
 /* Collapse namespaces */
@@ -42,27 +43,21 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.1.*");        // <-- Create a container of IP addresses from a "wildcard"
+	vector<string> net = GetIPs("74.125.134.*");    // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                      // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
-	PacketContainer pings_packets;
+	typedef boost::shared_ptr<Packet> packet_ptr;
+	vector<packet_ptr> pings_packets;
 
 	/* Iterate to access each string that defines an IP address */
-	for(it_IP = net->begin() ; it_IP != net->end() ; it_IP++) {
+	for(it_IP = net.begin() ; it_IP != net.end() ; it_IP++) {
 
 		ip_header.SetDestinationIP(*it_IP);              // <-- Set a destination IP address
 		icmp_header.SetIdentifier(RNG16());              // <-- Set a random ID for the ICMP packet
 
-		/* Create a packet on the heap */
-		Packet* packet = new Packet;
-
-		/* Push the layers */
-		packet->PushLayer(ip_header);
-		packet->PushLayer(icmp_header);
-
 		/* Finally, push the packet into the container */
-		pings_packets.push_back(packet);
+		pings_packets.push_back(packet_ptr(new Packet(ip_header / icmp_header)));
 	}
 
 	/*
@@ -76,7 +71,8 @@ int main() {
 	 * 2  (retry)    -> Number of times we send a packet until a response is received
 	 */
 	cout << "[@] Sending the ICMP echoes. Wait..." << endl;
-	PacketContainer* pongs_packets = pings_packets.SendRecv(iface,0.1,2,48);
+	vector<packet_ptr> pongs_packets(pings_packets.size());
+	SendRecv(pings_packets.begin(),pings_packets.end(),pongs_packets.begin(),iface,1,3,48);
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/*
@@ -85,17 +81,17 @@ int main() {
 	 * the SendRecv functions returns) we can iterate over each
 	 * reply packet, if any.
 	 */
-	PacketContainer::iterator it_pck;
+	vector<packet_ptr>::iterator it_pck;
 	int counter = 0;
-	for(it_pck = pongs_packets->begin() ; it_pck < pongs_packets->end() ; it_pck++) {
+	for(it_pck = pongs_packets.begin() ; it_pck < pongs_packets.end() ; it_pck++) {
 		/* Check if the pointer is not NULL */
-		Packet* reply_packet = (*it_pck);
+		packet_ptr reply_packet = (*it_pck);
 		if(reply_packet) {
             /* Get the ICMP layer */
-            ICMP* icmp_layer = GetICMP(*reply_packet);
+            ICMP* icmp_layer = reply_packet->GetLayer<ICMP>();
             if(icmp_layer->GetType() == ICMP::EchoReply) {
 				/* Get the IP layer of the replied packet */
-				IP* ip_layer = GetIP(*reply_packet);
+				IP* ip_layer = reply_packet->GetLayer<IP>();
 				/* Print the Source IP */
 				cout << "[@] Host " << ip_layer->GetSourceIP() << " up." << endl;
 				counter++;
@@ -107,16 +103,11 @@ int main() {
 
 	/* Now, because we are good programmers, clean everything before exit */
 
-	/* Delete the container with the PINGS packets */
-	pings_packets.ClearPackets();
-
-	/* Delete the container with the responses, if there is one (check the NULL pointer) */
-	pongs_packets->ClearPackets();
-	/* Delete the container itself */
-	delete pongs_packets;
-
-	/* Delete the IP address container */
-	delete net;
+//	/* Delete the container with the PINGS packets */
+//	ClearContainer(pings_packets);
+//
+//	/* Delete the container with the responses, if there is one (check the NULL pointer) */
+//	ClearContainer(pongs_packets);
 
 	/* Clean up library stuff */
 	CleanCrafter();

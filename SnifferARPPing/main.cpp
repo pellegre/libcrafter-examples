@@ -59,14 +59,14 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
+	vector<string> net = GetIPs("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                        // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ARP requests */
 	PacketContainer request_packets;
 
 	/* Iterate to access each string that defines an IP address */
-	for(it_IP = net->begin() ; it_IP != net->end() ; it_IP++) {
+	for(it_IP = net.begin() ; it_IP != net.end() ; it_IP++) {
 
 		arp_header.SetTargetIP(*it_IP);                    // <-- Set a destination IP address on ARP header
 
@@ -91,10 +91,10 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * request_packets container. Now we can Send 'Em All (3 times).
 	 */
-	//for(int i = 0 ; i < 3 ; i++)
-		request_packets.Send(iface,48);
+	for(int i = 0 ; i < 3 ; i++)
+		Send(request_packets.begin(), request_packets.end(), iface, 48);
 
-	/* Wait a second to sniff all the responses... */
+	/* Give a second to the sniffer */
 	sleep(1);
 
 	/* ... and close the sniffer */
@@ -107,10 +107,7 @@ int main() {
 				"with MAC address " << (*it_host).second << endl;
 
 	/* Delete the container with the ARP requests */
-	request_packets.ClearPackets();
-
-	/* Delete the IP address container */
-	delete net;
+	ClearContainer(request_packets);
 
 	/* Print number of host up */
 	cout << "[@] " << pair_addr.size() << " hosts up. " << endl;

@@ -18,7 +18,7 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "eth0";
+	string iface = "wlan0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
@@ -28,7 +28,7 @@ int main() {
 
 	/* Set the Source and Destination IP address */
 	ip_header.SetSourceIP(MyIP);                   
-	ip_header.SetDestinationIP("10.73.1.1");
+	ip_header.SetDestinationIP("www.google.com.ar");
 
 	/* ++++++++++++ Example how-to use LSRR options (same for SSRR) */
 	vector<string> ips;
@@ -71,8 +71,11 @@ int main() {
 	                icmp_header / raw_header;
 
 
+	Packet p;
+        p.PacketFromIP(packet.GetRawPtr(), packet.GetSize());
+        p.Print();
 /* Send and receive an echoreply packet */
-	Packet *rcv = packet.SendRecv(iface,2);
+	Packet *rcv = 0;//packet.SendRecv(iface,2);
 
 
 	/* Check if the return value of SendRecv is not zero */

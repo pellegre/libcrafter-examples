@@ -5,8 +5,10 @@
  * are captured with a sniffer.
  */
 #include <iostream>
+#include <vector>
 #include <string>
 #include <crafter.h>
+#include <tr1/memory>
 #include <set>
 
 /* Collapse namespaces */
@@ -54,27 +56,20 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string>* net = ParseIP("192.168.0.*");        // <-- Create a container of IP addresses from a "wildcard"
-	vector<string>::iterator it_IP;                      // <-- Iterator
+	vector<string> net = GetIPs("74.125.134.*");        // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>::iterator ip_addr;                        // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
-	PacketContainer pings_packets;
+	vector<Packet*> pings_packets;
 
 	/* Iterate to access each string that defines an IP address */
-	for(it_IP = net->begin() ; it_IP != net->end() ; it_IP++) {
+	for(ip_addr = net.begin() ; ip_addr != net.end() ; ip_addr++) {
 
-		ip_header.SetDestinationIP(*it_IP);              // <-- Set a destination IP address
+		ip_header.SetDestinationIP(*ip_addr);            // <-- Set a destination IP address
 		icmp_header.SetIdentifier(RNG16());              // <-- Set a random ID for the ICMP packet
 
-		/* Create a packet on the heap */
-		Packet* packet = new Packet;
-
-		/* Push the layers */
-		packet->PushLayer(ip_header);
-		packet->PushLayer(icmp_header);
-
 		/* Finally, push the packet into the container */
-		pings_packets.push_back(packet);
+		pings_packets.push_back(new Packet(ip_header / icmp_header));
 	}
 
 	/* Create a sniffer for listen to ICMP traffic (only the replies) */
@@ -87,29 +82,23 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * pings_packets container. Now we can Send 'Em All.
 	 */
-	//for(int i = 0 ; i < 3 ; i++)
-		pings_packets.Send(iface);
+	for(int i = 0 ; i < 1  ; i++)
+		Send(pings_packets.begin(), pings_packets.end(),iface,32);
 
-	/* Wait to sniff all the packets... */
 	sleep(1);
 
 	/* ... and close the sniffer */
 	sniff.Cancel();
-
 
 	/* Print the alive hosts */
 	set<string>::iterator it_host;
 	for(it_host = addr.begin() ; it_host != addr.end() ; it_host++)
 		cout << "[@] Host " << (*it_host) << " up." << endl;
 
-	/* Delete the container with the PINGS packets */
-	pings_packets.ClearPackets();
-
-	/* Delete the IP address container */
-	delete net;
-
 	/* Print the number of alive hosts */
 	cout << "[@] " << addr.size() << " hosts up. " << endl;
+
+	//ClearContainer(pings_packets);
 
 	/* Clean up library stuff */
 	CleanCrafter();
