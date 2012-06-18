@@ -18,11 +18,11 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "wlan0";
+	string iface = "eth0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string DstIP = "192.168.0.108";
+	string DstIP = "10.73.36.224";
 
 	Ethernet ether_header;
 
@@ -89,39 +89,33 @@ int main() {
 		/* Print all the received packet */
 		pck_rcv->Print();
 
-		TCP* rcv_tcp = GetTCP(*pck_rcv);
-
+		TCP* rcv_tcp = pck_rcv->GetLayer<TCP>();
 		/* We want to check some option of the SYN/ACK received */
 		if(rcv_tcp->GetACK() && rcv_tcp->GetSYN()) {
 
 			cout << "[@] Port open, parsing options... " << endl;
-			LayerStack::iterator it;
 
-			for(it  = pck_rcv->begin() ;it != pck_rcv->end() ; it++) {
+			/* Look for the Timestamp option on the received packet */
+			TCPOptionTimestamp* tstamp = pck_rcv->GetLayer<TCPOptionTimestamp>();
 
-				/* Look for the Timestamp option on the received packet */
-				if((*it)->GetID() == TCPOptionTimestamp::PROTO) {
-					TCPOptionTimestamp* tstamp = dynamic_cast<TCPOptionTimestamp*>((*it));
+			if(tstamp) {
+				cout << "[++++] Timestamp OPTION " << endl;
+				/* Print some info */
+				cout << "[@] Timestamp value      = " << dec << tstamp->GetValue() << endl;
+				cout << "[@] Timestamp echo-reply = " << dec << tstamp->GetEchoReply() << endl;
+			}
 
-					cout << "[++++] Timestamp OPTION " << endl;
-					/* Print some info */
-					cout << "[@] Timestamp value      = " << dec << tstamp->GetValue() << endl;
-					cout << "[@] Timestamp echo-reply = " << dec << tstamp->GetEchoReply() << endl;
+			TCPOption* generic_opt = pck_rcv->GetLayer<TCPOption>();
+
+			while(generic_opt) {
+				if(generic_opt->GetKind() == 0x03) {
+					/* This is a Windows Scale Opt, and get the raw data from the payload */
+					vector<byte> opt_data =  generic_opt->GetPayload().GetContainer();
+					cout << "[++++] Window Scale OPTION " << endl;
+					/* We know that there is one byte indicating the window scale : */
+					cout << "[@] Windows Scale = " << dec << (int)opt_data[0] << endl;
 				}
-
-				/* Look for some option that is not implemented in libcrafter (for example the Windows Scale Option - Kind = 3) */
-				if((*it)->GetID() == TCPOption::PROTO) {
-					TCPOption* generic_opt = dynamic_cast<TCPOption*>((*it));
-					if(generic_opt->GetKind() == 0x03) {
-						/* This is a Windows Scale Opt, and get the raw data from the payload */
-						vector<byte> opt_data =  generic_opt->GetPayload().GetContainer();
-						cout << "[++++] Window Scale OPTION " << endl;
-						/* We know that there is one byte indicating the window scale : */
-						cout << "[@] Windows Scale = " << dec << (int)opt_data[0] << endl;
-					}
-
-				}
-
+				generic_opt = pck_rcv->GetLayer<TCPOption>(generic_opt);
 			}
 
 		} else
