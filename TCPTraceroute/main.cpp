@@ -13,16 +13,13 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
 	/* ----------- Host and traceroute data --------- */
 
 	/* This is the IP we want to scan */
-	string scan_ip = "www.google.com";
+	string scan_ip = "www.google.com.ar";
 
 	/*  Set the destination port for the TCP packets */
 	int port_number = 80;
@@ -48,8 +45,8 @@ int main() {
 
     /* ---------------------------------------------- */
 
-	/* Create a PacketContainer to hold all the TCP packets */
-	PacketContainer tcp_packets;
+	/* Create a container to hold all the TCP packets */
+	vector<Packet*> tcp_packets;
 
 	/* Create a packet for each TTL */
 	for(int ttl = 1 ; ttl <= max_hops ; ttl++) {
@@ -65,31 +62,31 @@ int main() {
 		tcp_header.SetSrcPort(RNG16());
 
 		/* Create a packet */
-		Packet* packet = new Packet;
-
-		/* Push each layer... */
-		packet->PushLayer(ip_header);
-		packet->PushLayer(tcp_header);
+		Packet* packet = new Packet(ip_header/tcp_header);
 
 		/* Push the packet into the container */
 		tcp_packets.push_back(packet);
 	}
 
 	cout << "[@] Sending the TCP packets. Wait..." << endl;
-	PacketContainer* ret_packets = SendRecv(&tcp_packets,iface,32,2,2);
+
+	/* Create a TCP packet container to hold the responses */
+	PacketContainer ret_packets(tcp_packets.size());
+	SendRecv(tcp_packets.begin(),tcp_packets.end(),ret_packets.begin(),iface,0.1,3,48);
+
 	cout << "[@] SendRecv function returns :-) " << endl;
 
 	/* Now, check each answer */
-	PacketContainer::iterator it_pck;
+	vector<Packet*>::iterator it_pck;
 
 	int counter = 1;
-	for(it_pck = ret_packets->begin() ; it_pck < ret_packets->end() ; it_pck++) {
+	for(it_pck = ret_packets.begin() ; it_pck < ret_packets.end() ; it_pck++) {
 		/* Check if the pointer is not NULL */
 		Packet* reply_packet = (*it_pck);
 		if(reply_packet) {
 
 			/* Get the IP layer of the replied packet */
-			IP* ip_layer = GetIP(*reply_packet);
+			IP* ip_layer = reply_packet->GetLayer<IP>();
 
 			/* Get source IP of the packet */
 			string src_ip = ip_layer->GetSourceIP();
@@ -97,7 +94,7 @@ int main() {
 			cout << "[" << counter << "] " << src_ip << endl;
 
 			/* Check if the received packet was an ICMP message */
-			ICMP* icmp_layer = GetICMP(*reply_packet);
+			ICMP* icmp_layer = reply_packet->GetLayer<ICMP>();
 
 			/* If isn't an ICMP packet, break the loop. You can do additional checks. (TCP flags, ICMP type, etc...)*/
 			if(!icmp_layer) break;
@@ -114,14 +111,8 @@ int main() {
 		delete (*it_pck);
 
 	/* Delete the container with the responses, if there is one (check the NULL pointer) */
-	for(it_pck = ret_packets->begin() ; it_pck < ret_packets->end() ; it_pck++)
-		if((*it_pck)) delete (*it_pck);
-
-	/* Delete the container itself */
-	delete ret_packets;
-
-	/* Clean up library stuff */
-	CleanCrafter();
+	for(it_pck = ret_packets.begin() ; it_pck < ret_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	return 0;
 }

@@ -19,7 +19,7 @@ void PacketHandler(Packet* sniff_packet, void* user) {
 	/* user -> void pointer to the data supplied by the user */
 
 	/* Check if there is a payload */
-	RawLayer* raw_payload = GetRawLayer(*sniff_packet);
+	RawLayer* raw_payload = sniff_packet->GetLayer<RawLayer>();
 	if(raw_payload) {
 
 		/* You can get the payload as a string */
@@ -28,8 +28,8 @@ void PacketHandler(Packet* sniff_packet, void* user) {
 		/* Print the payload only if the <GET> world is inside */
 		if(payload.find("GET") != string::npos) {
 			/* Print relevant data from the connection */
-			TCP* tcp_layer = GetTCP(*sniff_packet);
-			IP* ip_layer = GetIP(*sniff_packet);
+			TCP* tcp_layer = sniff_packet->GetLayer<TCP>();
+			IP* ip_layer = sniff_packet->GetLayer<IP>();
 
 			cout << ip_layer->GetSourceIP()      << ":" << tcp_layer->GetSrcPort() << " -> " <<
 					ip_layer->GetDestinationIP() << ":" << tcp_layer->GetDstPort()
@@ -69,9 +69,6 @@ void reset_ipforward() {
 }
 
 int main() {
-
-	/* Init the library */
-	InitCrafter();
 
 	/* Set the interface */
 	string iface = "wlan0";
@@ -113,9 +110,6 @@ int main() {
 	sniff.Capture(-1);
 
 	/* ----------------------------------------------------------------------- */
-
-	/* Clean up library stuff... */
-	CleanCrafter();
 
 	/* Reset IP forward */
 	reset_ipforward();

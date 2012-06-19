@@ -13,9 +13,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -50,9 +47,7 @@ int main() {
 	Packet packet = ip_header / icmp_header / orig_payload /
 			        ICMPExtension() / ICMPExtensionObject() / mpls_1 / mpls_2 / mpls_3;
 
-	packet.Send(iface);
-
-	CleanCrafter();
+	packet.Send();
 
 	return 0;
 

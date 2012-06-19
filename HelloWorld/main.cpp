@@ -13,9 +13,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Create a Raw layer with some data on it... */
 	RawLayer hello("Hello ");
 	/* ...or a pointer */
@@ -42,8 +39,6 @@ int main() {
 	/* And last but not least, you can write the packet on the wire :-) */
 	packet.Send("wlan0");
 
-	/* Clean before exit */
-	CleanCrafter();
 	delete world;
 
 	return 0;

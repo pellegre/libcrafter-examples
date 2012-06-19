@@ -13,9 +13,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -64,11 +61,6 @@ int main() {
 	packet.Print();
 	packet.HexDump();
 	packet.RawString();
-
-
-
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 

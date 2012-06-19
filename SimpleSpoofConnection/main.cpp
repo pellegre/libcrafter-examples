@@ -15,10 +15,6 @@ void start_forward(const string& dst_ip, const string& src_ip, int dst_port, int
 void clear_forward(const string& dst_ip, const string& src_ip, int dst_port, int src_port);
 
 int main() {
-
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -63,7 +59,6 @@ int main() {
 	/* Clear everything */
 	clear_forward(dst_ip, src_ip, dstport, srcport);
 	CleanARPContext(arp_context);
-	CleanCrafter();
 
 	return 0;
 }

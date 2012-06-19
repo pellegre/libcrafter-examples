@@ -1,26 +1,68 @@
 /*
- * Ping Scan *
- * This program performs a ping scan on a network specified by the user.
+ * Some examples to show how the user can write into his/her open sockets with libcrafter.
+ *
  */
 #include <iostream>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include <crafter.h>
 
 /* Collapse namespaces */
 using namespace std;
 using namespace Crafter;
 
-int main() {
+void ping_pong(int s) {
+
+	/* Set the interface */
+	string iface = "wlan0";
+	/* Get the IP address associated to the interface */
+	string MyIP = GetMyIP(iface);
+
+	/* Create an IP header */
+	IP ip_header;
+
+	/* Set the Source and Destination IP address */
+	ip_header.SetSourceIP(MyIP);                   // <-- Set a source IP address.
+	ip_header.SetDestinationIP("www.google.com");  // <-- Set a destination IP address as a domain name
+
+	/* Create an ICMP header */
+	ICMP icmp_header;
+
+	icmp_header.SetType(ICMP::EchoRequest);        // <-- Echo request (a ping)
+	icmp_header.SetIdentifier(RNG16());            // <-- Set a random ID for the ICMP packet
+
+	/* Create a payload */
+	RawLayer raw_header;
+	raw_header.SetPayload("PingPongTest\n");
+
+	/* Create a packet with the layers */
+	Packet packet (ip_header / icmp_header / raw_header);
+
+	/*
+	 * If we send a PING (echo), we expect a PONG (reply).
+	 * So, we use the SendRecv function.
+	 */
+	Packet *rcv = packet.SocketSendRecv(s,iface,2);      // <-- If a reply is matched, the function
+	                                                     //     returns a pointer to that packet
+
+	/* Check if the return value of SendRecv is not zero */
+	if(rcv) {
+		/* Print the packet */
+		rcv -> Print();
+		/* Delete the packet */
+		delete rcv;
+	} else
+		cout << "[@] No answer... " << endl;
+
+}
+
+void network_ping(int s) {
 
 	/* Set the interface */
 	string iface = "wlan0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string MyMAC = GetMyMAC(iface);
 	cout << "[@] My IP address is  : " << MyIP  << endl;
-	cout << "[@] My MAC address is  : " << MyMAC  << endl;
 
 	/* --------- Common data to all headers --------- */
 
@@ -69,7 +111,7 @@ int main() {
 
 	/* Create a packet container to hold all the answers */
 	vector<Packet*> pongs_packets(pings_packets.size());
-	SendRecv(pings_packets.begin(),pings_packets.end(),pongs_packets.begin(),iface,0.1,2,48);
+	SocketSendRecv(s,pings_packets.begin(),pings_packets.end(),pongs_packets.begin(),iface,0.1,2,48);
 
 	cout << "[@] SendRecv function returns :-) " << endl;
 
@@ -99,9 +141,33 @@ int main() {
 
 	cout << "[@] " << counter << " hosts up. " << endl;
 
-	/* This delete all the packets on the container */
-	ClearContainer(pings_packets);
-	ClearContainer(pongs_packets);
+}
+
+int main() {
+
+    /* Create a socket descriptor */
+    int s = socket(PF_INET, SOCK_RAW, IPPROTO_RAW);
+
+    if(s < 0)
+		exit(1);
+
+    /* Sock options */
+    int one = 1;
+    const int* val = &one;
+
+    if(setsockopt(s, IPPROTO_IP, IP_HDRINCL, val, sizeof(one)) < 0)
+		exit(1);
+
+	if(setsockopt(s, SOL_SOCKET, SO_BROADCAST, val, sizeof(one)) < 0)
+		exit(1);
+
+	cout << "[@] SIMPLE PING: " << endl;
+	ping_pong(s);
+
+	cout << "[@] NETWORK PING: " <<  endl;
+	network_ping(800);
+
+	close(s);
 
 	return 0;
 }

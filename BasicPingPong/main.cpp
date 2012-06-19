@@ -16,9 +16,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -42,13 +39,8 @@ int main() {
 	RawLayer raw_header;
 	raw_header.SetPayload("PingPongTest\n");
 
-	/* Create a packet... */
-	Packet packet;
-
-	/* ... and push each layer */
-	packet.PushLayer(ip_header);
-	packet.PushLayer(icmp_header);
-	packet.PushLayer(raw_header);
+	/* Create a packet with the layers */
+	Packet packet (ip_header / icmp_header / raw_header);
 
 	/*
 	 * If we send a PING (echo), we expect a PONG (reply).
@@ -61,13 +53,10 @@ int main() {
 	if(rcv) {
 		/* Print the packet */
 		rcv -> Print();
-		/* Delete the packet, is your responsibility */
+		/* Delete the packet */
 		delete rcv;
 	} else
 		cout << "[@] No answer... " << endl;
-
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 

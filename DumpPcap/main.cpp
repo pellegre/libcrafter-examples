@@ -1,10 +1,10 @@
 /*
- * Simple ARP Ping on local network
+ * Read and dump pcap files with libcrafter
  *
- * The program assembles a set of ARP requests on a PacketContainer
- * and, using the SendRecv function, send them all. Finally, prints
- * on the standard output the IP and MAC address of the alive hosts.
- *
+ * The program assembles a set of ARP requests and TCP packets on a
+ * container and then dumps the data on a pcap file. Finally, we
+ * read that file and prints the first 5 packets. Not very useful
+ * but shows how to work with pcap files.
  */
 
 #include <iostream>
@@ -20,9 +20,6 @@ using namespace std;
 using namespace Crafter;
 
 int main() {
-
-	/* Init the library */
-	InitCrafter();
 
 	/* Set the interface */
 	string iface = "wlan0";
@@ -98,14 +95,14 @@ int main() {
 		tcp_header.SetSrcPort(port);
 
 		/* Create a packet */
-		Packet* packet = new Packet;
+		packet_ptr packet = packet_ptr(new Packet);
 
 		/* Push each layer... */
 		packet->PushLayer(ip_header);
 		packet->PushLayer(tcp_header);
 
 		/* Push the packet into the container */
-		tcp_packets.push_back(packet_ptr(packet));
+		tcp_packets.push_back(packet);
 
 		port++;
 	}
@@ -149,9 +146,6 @@ int main() {
 	cout << endl;
 	for(it_deq = tcp_filter_read.begin() ; it_deq != tcp_filter_read.end() ; it_deq++)
 		(*it_deq)->Print();
-
-	/* Clean up library stuff */
-	CleanCrafter();
 
 	return 0;
 }

@@ -16,15 +16,12 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
-	string iface = "eth0";
+	string iface = "wlan0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string dns_server = "10.73.2.101";
+	string dns_server = "192.168.0.1";
 
 	/* Create an IP header */
 	IP ip_header;
@@ -47,7 +44,7 @@ int main() {
 	dns_header.SetIdentification(RNG16());
 
 	/* Create a DNSQuery class. This class IS NOT a <Layer> class */
-	DNS::DNSQuery dns_query("ib.cnea.gov.ar");
+	DNS::DNSQuery dns_query("www.google.com");
 	/* Set the type */
 	dns_query.SetType(DNS::TypeA);
 
@@ -61,7 +58,6 @@ int main() {
 	Packet* rcv = packet.SendRecv(iface);
 
 	if(rcv) {
-		rcv->Print();
 		/*
 		 * An application protocol is always get from the network as a raw layer. There is
 		 * no way to know which protocol is on the top of a transport layer (unless we rely on
@@ -69,7 +65,7 @@ int main() {
 		 */
 		DNS dns_rcv;
 		/* Fill the DNS layer information from a raw layer */
-		dns_rcv.FromRaw(*GetRawLayer(*rcv));
+		dns_rcv.FromRaw(*(rcv->GetLayer<RawLayer>()));
 		/* Finally print the response to STDOUT */
 		dns_rcv.Print();
 		/* Delete the received packet */
@@ -77,9 +73,5 @@ int main() {
 	} else
 		cout << "[@] No response from DNS server" << endl;
 
-	/* Clean before exit */
-	CleanCrafter();
-
 	return 0;
-
 }

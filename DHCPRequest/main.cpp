@@ -1,3 +1,8 @@
+/*
+ * Create a DHCP request
+ *
+ * Simple examples to show how to use DHCP layer and DHCP options.
+ */
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -25,9 +30,6 @@ void PrintTime(word t) {
 
 int main() {
 
-	/* Initialize the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -49,7 +51,6 @@ int main() {
 	/* Set the Source and Destination IP address */
 	ip_header.SetSourceIP("0.0.0.0");
 	ip_header.SetDestinationIP("255.255.255.255");
-	ip_header.SetFlags(0x0);
 
 	/* Create a UDP header */
 	UDP udp_header;
@@ -229,8 +230,6 @@ int main() {
 		cout << "[@] No response to the request message " << endl;
 
 	delete rcv;
-
-	CleanCrafter();
 
 	return 0;
 }

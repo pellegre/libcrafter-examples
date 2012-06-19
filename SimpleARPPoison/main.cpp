@@ -21,9 +21,6 @@ void ctrl_c(int dummy) {
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -119,10 +116,6 @@ int main() {
 	}
 
 	cout << "[@] Done! " << endl;
-	/*
-	 * Clean up library stuff...
-	 */
-	CleanCrafter();
 
 	return 0;
 }

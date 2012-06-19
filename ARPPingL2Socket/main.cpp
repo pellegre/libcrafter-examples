@@ -32,6 +32,37 @@ int main() {
 	/* Set the interface */
 	string iface = "wlan0";
 
+	int rawsock;
+
+	if((rawsock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL)))== -1)
+		exit(1);
+
+	struct sockaddr_ll sll;
+	struct ifreq ifr;
+
+	memset(&sll,0,sizeof(sll));
+	memset(&ifr,0,sizeof(ifr));
+
+	/* First Get the Interface Index  */
+	strncpy((char *)ifr.ifr_name, iface.c_str(), IFNAMSIZ);
+	if((ioctl(rawsock, SIOCGIFINDEX, &ifr)) == -1)
+	{
+		perror("Getting Interface index");
+		exit(1);
+	}
+
+	/* Bind our raw socket to this interface */
+	sll.sll_family = AF_PACKET;
+	sll.sll_ifindex = ifr.ifr_ifindex;
+	sll.sll_protocol = htons(ETH_P_ALL);
+
+
+	if((bind(rawsock, (struct sockaddr *)&sll, sizeof(sll)))== -1)
+	{
+		perror("Binding raw socket to interface");
+		exit(1);
+	}
+
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
 	/* Get the MAC Address associated to the interface */
@@ -86,10 +117,11 @@ int main() {
 
 	/*
 	 * At this point, we have all the packets into the
-	 * request_packets container. Now we can Send 'Em All (3 times).
+	 * request_packets container. Now we can Send 'Em All (3 times)
+	 * with 48 threads.
 	 */
 	for(int i = 0 ; i < 3 ; i++)
-		Send(request_packets.begin(), request_packets.end(), iface, 48);
+		SocketSend(rawsock,request_packets.begin(), request_packets.end(), 48);
 
 	/* Give a second to the sniffer */
 	sleep(1);
@@ -108,6 +140,8 @@ int main() {
 
 	/* Print number of host up */
 	cout << "[@] " << pair_addr.size() << " hosts up. " << endl;
+
+	close(rawsock);
 
 	return 0;
 }

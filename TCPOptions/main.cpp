@@ -18,11 +18,11 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "eth0";
+	string iface = "wlan0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string DstIP = "10.73.36.224";
+	string DstIP = "192.168.0.108";
 
 	Ethernet ether_header;
 

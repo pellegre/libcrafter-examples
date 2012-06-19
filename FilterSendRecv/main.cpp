@@ -14,9 +14,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	//Verbose(0);
 
 	/* Set the interface */
@@ -97,9 +94,6 @@ int main() {
 		delete rcv;
 	} else
 		cout << "[@] No answer... " << endl;
-
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 

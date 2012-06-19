@@ -23,9 +23,6 @@ void iptables_clear_reset(const string& dst_ip, int dst_port, int src_port);
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -64,9 +61,6 @@ int main() {
 
 	/* Delete IPTABLES rules */
 	iptables_clear_reset(dst_ip, dstport, srcport);
-
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 }

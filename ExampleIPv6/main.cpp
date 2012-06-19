@@ -12,9 +12,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "wlan0";
 
@@ -52,16 +49,13 @@ int main() {
 	/* Create a packet... */
 	Packet packet = ipv6_header / tcp_header / raw_header;
 
-	/* Send the packet, this would fill the missing fields (like checksum, length, etc) */
+	/* Send the packet */
 	Packet* rcv_packet = packet.SendRecv(iface,0.1,2);
 
 	if(rcv_packet)
 		rcv_packet->Print();
 	else
 		cout << "[@] No response... " << endl;
-
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 }

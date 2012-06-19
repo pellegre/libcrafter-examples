@@ -26,5 +26,7 @@ FOLDERS="HelloWorld
          SimpleTCP
          SimpleSpoofConnection
          SimpleHijackConnection
+         UserSockets
+         ARPPingL2Socket
         "
 

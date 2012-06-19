@@ -30,9 +30,6 @@ void PacketHandler(Packet* sniff_packet, void* user) {
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
 	string iface = "eth0";
 
@@ -107,7 +104,6 @@ int main() {
 	clear_block(dst_ip,src_ip,dstport,srcport);
     clear_forward();
 	CleanARPContext(arp_context);
-	CleanCrafter();
 
 	return 0;
 }

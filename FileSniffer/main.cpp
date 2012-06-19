@@ -23,12 +23,12 @@ void PacketHandler(Packet* sniff_packet, void* user) {
 	/* user -> void pointer to the data supplied by the user */
 
 	/* Check if there is a payload */
-	RawLayer* raw_payload = GetRawLayer(*sniff_packet);
+	RawLayer* raw_payload = sniff_packet->GetLayer<RawLayer>();
 	if(raw_payload) {
 
 		file << "[+] ------- [+]" << endl;
 		/* Summarize some data */
-		TCP* tcp_layer = GetTCP(*sniff_packet);
+		TCP* tcp_layer = sniff_packet->GetLayer<TCP>();
 		file << "[#] TCP packet from source port: " << tcp_layer->GetSrcPort() << endl;
 
 		file << "[#] With Payload: " << endl;
@@ -41,9 +41,6 @@ void PacketHandler(Packet* sniff_packet, void* user) {
 
 
 int main() {
-
-	/* Init the library */
-	InitCrafter();
 
 	/* Set the interface */
 	string iface = "wlan0";
@@ -76,9 +73,6 @@ int main() {
 
 	/* Close the file */
 	file.close();
-
-	/* Clean up library stuff... */
-	CleanCrafter();
 
 	return 0;
 }

@@ -14,9 +14,6 @@ using namespace Crafter;
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Create the layer */
 	RawLayer raw_layer;
 
@@ -29,7 +26,7 @@ int main() {
 	Packet packet = raw_layer;
 
 	/* Send it throught the network  */
-	packet.Send("wlan0");
+	packet.Send();
 
 	/* You can manipulate the raw layer once is "inside" the packet */
 	RawLayer* raw_packet_layer = GetRawLayer(packet);
@@ -38,7 +35,7 @@ int main() {
 	raw_packet_layer->SetPayload("This is a new Payload");
 
 	/* And send it again...*/
-	packet.Send("wlan0");
+	packet.Send();
 
 	/* Create another raw layer */
 	RawLayer new_raw_layer("This is another payload on another layer");
@@ -47,10 +44,8 @@ int main() {
 	packet = raw_layer / new_raw_layer;
 
 	/* And send it again...*/
-	packet.Send("wlan0");
+	packet.Send();
 
-	/* Clean before exit */
-	CleanCrafter();
 
 	return 0;
 }

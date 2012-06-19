@@ -1,7 +1,7 @@
 /*
  * Basic Send
  *
- * The program creates an UDP packet with some arbitrary payload a send it to
+ * The program creates a TCP packet with some arbitrary payload a send it to
  * a destination. Basic example to illustrate the use of the Send function and
  * how to construct a packet.
  */
@@ -10,16 +10,12 @@
 #include <string>
 #include <crafter.h>
 
-
 /* Collapse namespaces */
 using namespace std;
 using namespace Crafter;
 
 void PrintPacket(Packet *p){p->Print();}
 int main() {
-
-	/* Init the library */
-	InitCrafter();
 
 	/* Set the interface */
 	string iface = "wlan0";
@@ -32,8 +28,8 @@ int main() {
 
 	Ethernet ether_header;
 
-	ether_header.SetDestinationMAC(GetMAC(DstIP,iface)); /* GetMAC will do an ARP request and get that IP address */
-	ether_header.SetSourceMAC(GetMyMAC());
+	ether_header.SetDestinationMAC(GetMAC(DstIP,iface)); /* GetMAC() will do an ARP request and get that IP address */
+	ether_header.SetSourceMAC(GetMyMAC(iface));
 
 	/* Create an IP header */
 	IP ip_header;
@@ -42,12 +38,13 @@ int main() {
 	ip_header.SetSourceIP(MyIP);
 	ip_header.SetDestinationIP(DstIP);
 
-	/* Create a UDP header */
+	/* Create a TCP header */
 	TCP tcp_header;
 
 	/* Set the source and destination ports */
 	tcp_header.SetSrcPort(62345);
 	tcp_header.SetDstPort(RNG16());
+	/* Set some TCP flags */
 	tcp_header.SetFlags(TCP::SYN | TCP::CWR | TCP::ECE);
 
 	/* Create a payload */
@@ -57,29 +54,26 @@ int main() {
 	/* Create a packet... */
 	Packet packet = ether_header / ip_header / tcp_header / raw_header;
 
-	ofstream out("test.dat");
-
 	/* Print before sending */
 	cout << endl << "[@] Print before sending: " << endl;
-	packet.Print(); /* This goes to cout */
-	packet.HexDump(out);
-	packet.RawString(out);
+	packet.Print(); /* This goes to cout by default */
 
 	/* Send the packet, this would fill the missing fields (like checksum, length, etc) */
-	packet.Send(iface);
+	packet.Send();
 
 	cout << endl;
 	cout << "[+] ***************************************************** [+]" << endl;
 	cout << endl;
 
-	/* Print after sending, the packet is not the same. */
+	/* Print after sending, the fields on the layers of the packet were filled with the correct values. */
 	cout << "[@] Print after sending: " << endl;
 	packet.Print();
+
+	/* You can print the data to a file */
+	ofstream out("test.dat");
 	packet.HexDump(out);
 	packet.RawString(out);
-
-	/* Clean before exit */
-	CleanCrafter();
+	out.close();
 
 	return 0;
 }

@@ -35,14 +35,17 @@ void SendAndRecvTCP(IPLayer* ip_layer, const string& iface, const string& src_ip
 	if(pck_rcv) {
 
 		/* Get IP layer, no matter which version (4 or 6) */
-		IPLayer* ip_rcv = GetIPLayer(*pck_rcv);
+		IPLayer* ip_rcv = pck_rcv->GetLayer<IPLayer>();
+		/* Print IP layer */
+		ip_rcv->Print();
+
 		/* Get TCP layer */
-		TCP* tcp_rcv = GetTCP(*pck_rcv);
+		TCP* tcp_rcv = pck_rcv->GetLayer<TCP>();
 
 		if(tcp_rcv->GetACK() && tcp_rcv->GetSYN())
-			cout << "[@] Port " << port << " is open on host " << ip_rcv->GetSourceIP() << endl;
+			cout << "[@] Port " << (dec) << port << " is open on host " << ip_rcv->GetSourceIP() << endl;
 		else
-			cout << "[@] The port " << port << " is not open on host " << ip_rcv->GetSourceIP() << endl;
+			cout << "[@] The port " << (dec) << port << " is not open on host " << ip_rcv->GetSourceIP() << endl;
 
 		delete pck_rcv;
 
@@ -52,29 +55,24 @@ void SendAndRecvTCP(IPLayer* ip_layer, const string& iface, const string& src_ip
 
 int main() {
 
-	/* Init the library */
-	InitCrafter();
-
 	/* Set the interface */
-	string iface = "eth0";
+	string iface = "wlan0";
 
 	/* Create an IP header */
 	IPv6* ipv6_header = new IPv6;
 	IP* ipv4_header = new IP;
 
-	/* Test a IPv6 address */
-	string dst_ipv6 = "fe80::7aac:c0ff:febe:1f48";
-	SendAndRecvTCP(ipv6_header, iface, GetMyIPv6(iface), dst_ipv6, 22);
-
 	/* Test a IPv4 address */
-	string dst_ipv4 = "10.73.36.211";
+	string dst_ipv4 = "192.168.0.108";
 	SendAndRecvTCP(ipv4_header, iface, GetMyIP(iface), dst_ipv4, 22);
+
+	/* Test a IPv6 address */
+	string dst_ipv6 = "fe80::a00:27ff:fea4:73d6";
+	SendAndRecvTCP(ipv6_header, iface, GetMyIPv6(iface), dst_ipv6, 22);
 
 	/* Clean before exit */
 	delete ipv4_header;
 	delete ipv6_header;
-
-	CleanCrafter();
 
 	return 0;
 }
