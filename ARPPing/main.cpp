@@ -44,7 +44,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string> net = GetIPs("192.168.0.1-10");             // <-- Create a container of IP addresses from a "wildcard"
+	vector<string> net = GetIPs("192.168.0.*");             // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator ip_addr;                       // <-- Iterator
 
 	/* Create a container of packet pointers to hold all the ARP requests */
@@ -111,10 +111,12 @@ int main() {
 	cout << "[@] " << counter << " hosts up. " << endl;
 
 	/* Delete the container with the ARP requests */
-	ClearContainer(request_packets);
+	for(it_pck = request_packets.begin() ; it_pck < request_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	/* Delete the container with the responses  */
-	ClearContainer(replies_packets);
+	for(it_pck = replies_packets.begin() ; it_pck < replies_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	return 0;
 }

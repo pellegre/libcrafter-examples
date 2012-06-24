@@ -1,7 +1,7 @@
 # Script to generate examples.tar.gz with the examples codes
 #!/bin/bash
 
-EXAMPLE_FOLDER="examples"
+EXAMPLE_FOLDER="examples-0.2"
 
 source folders.sh
 

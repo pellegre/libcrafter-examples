@@ -58,16 +58,16 @@ int main() {
 	/* Set the interface */
 	string iface = "wlan0";
 
-	/* Create an IP header */
-	IPv6* ipv6_header = new IPv6;
-	IP* ipv4_header = new IP;
-
 	/* Test a IPv4 address */
 	string dst_ipv4 = "192.168.0.108";
+	/* Build a IP layer from the destination address (this should create a pointer to a IPv4 layer) */
+	IPLayer* ipv4_header = IPLayer::BuildDst(dst_ipv4);
 	SendAndRecvTCP(ipv4_header, iface, GetMyIP(iface), dst_ipv4, 22);
 
 	/* Test a IPv6 address */
 	string dst_ipv6 = "fe80::a00:27ff:fea4:73d6";
+	/* Build a IP layer from the destination address (this should create a pointer to a IPv6 layer) */
+	IPLayer* ipv6_header = IPLayer::BuildDst(dst_ipv6);
 	SendAndRecvTCP(ipv6_header, iface, GetMyIPv6(iface), dst_ipv6, 22);
 
 	/* Clean before exit */

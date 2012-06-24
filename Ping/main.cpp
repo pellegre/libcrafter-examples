@@ -23,8 +23,8 @@ int main() {
 	IP ip_header;
 
 	/* Set the Source and Destination IP address */
-	ip_header.SetSourceIP(MyIP);                   // <-- Set a source IP address.
-	ip_header.SetDestinationIP("www.github.com");  // <-- Set a destination IP address as a domain name
+	ip_header.SetSourceIP(MyIP);                      // <-- Set a source IP address.
+	ip_header.SetDestinationIP("www.google.com.ar");  // <-- Set a destination IP address as a domain name
 
 	/* Create an ICMP header */
 	ICMP icmp_header;
@@ -33,8 +33,7 @@ int main() {
 	icmp_header.SetIdentifier(RNG16());            // <-- Set a random ID for the ICMP packet
 
 	/* Create a payload */
-	RawLayer raw_header;
-	raw_header.SetPayload("HelloPing!\n");
+	RawLayer raw_header("HelloPing!\n");
 
 	/* Create a packet... */
 	Packet packet;
@@ -52,15 +51,9 @@ int main() {
 	/* Send the packet, this would fill the missing fields (like checksum, lengths, etc) */
 	packet.Send(iface);
 
-	cout << endl;
-	cout << "[+] ***************************************************** [+]" << endl;
-	cout << endl;
-
 	/* Print after sending, the packet is not the same. */
-	cout << "[@] Print after sending: " << endl;
+	cout << endl << "[@] Print after sending: " << endl;
 	packet.Print();
-	packet.HexDump();
-	packet.RawString();
 
 	return 0;
 

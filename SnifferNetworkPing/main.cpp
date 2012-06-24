@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 #include <crafter.h>
-#include <tr1/memory>
 #include <set>
 
 /* Collapse namespaces */
@@ -56,8 +55,8 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string> net = GetIPs("74.125.134.*");        // <-- Create a container of IP addresses from a "wildcard"
-	vector<string>::iterator ip_addr;                        // <-- Iterator
+	vector<string> net = GetIPs("192.168.0.*");           // <-- Create a container of IP addresses from a "wildcard"
+	vector<string>::iterator ip_addr;                     // <-- Iterator
 
 	/* Create a PacketContainer to hold all the ICMP packets (is just a typedef for vector<Packet*>) */
 	vector<Packet*> pings_packets;
@@ -82,10 +81,7 @@ int main() {
 	 * At this point, we have all the packets into the
 	 * pings_packets container. Now we can Send 'Em All.
 	 */
-	for(int i = 0 ; i < 1  ; i++)
-		Send(pings_packets.begin(), pings_packets.end(),iface,32);
-
-	sleep(1);
+	Send(pings_packets.begin(), pings_packets.end(),iface,32);
 
 	/* ... and close the sniffer */
 	sniff.Cancel();
@@ -98,7 +94,10 @@ int main() {
 	/* Print the number of alive hosts */
 	cout << "[@] " << addr.size() << " hosts up. " << endl;
 
-	//ClearContainer(pings_packets);
+	/* Delete the container with the requests */
+	vector<Packet*>::iterator it_pck;
+	for(it_pck = pings_packets.begin() ; it_pck < pings_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	/* Clean up library stuff */
 	CleanCrafter();

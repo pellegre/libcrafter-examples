@@ -18,9 +18,7 @@ int main() {
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
-	string MyMAC = GetMyMAC(iface);
 	cout << "[@] My IP address is  : " << MyIP  << endl;
-	cout << "[@] My MAC address is  : " << MyMAC  << endl;
 
 	/* --------- Common data to all headers --------- */
 
@@ -99,9 +97,13 @@ int main() {
 
 	cout << "[@] " << counter << " hosts up. " << endl;
 
-	/* This delete all the packets on the container */
-	ClearContainer(pings_packets);
-	ClearContainer(pongs_packets);
+	/* Delete the container with the requests */
+	for(it_pck = pings_packets.begin() ; it_pck < pings_packets.end() ; it_pck++)
+		delete (*it_pck);
+
+	/* Delete the container with the responses  */
+	for(it_pck = pongs_packets.begin() ; it_pck < pongs_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	return 0;
 }

@@ -86,12 +86,10 @@ int main() {
 
 	/*
 	 * At this point, we have all the packets into the
-	 * request_packets container. Now we can Send 'Em All (3 times).
+	 * request_packets container. Now we can Send 'Em All.
 	 */
-	for(int i = 0 ; i < 3 ; i++)
-		Send(request_packets.begin(), request_packets.end(), iface, 48);
-
-	/* Give a second to the sniffer */
+	Send(request_packets.begin(), request_packets.end(), iface, 48);
+	/* Give a second to the sniffer... */
 	sleep(1);
 
 	/* ... and close the sniffer */
@@ -104,7 +102,9 @@ int main() {
 				"with MAC address " << (*it_host).second << endl;
 
 	/* Delete the container with the ARP requests */
-	ClearContainer(request_packets);
+	vector<Packet*>::iterator it_pck;
+	for(it_pck = request_packets.begin() ; it_pck < request_packets.end() ; it_pck++)
+		delete (*it_pck);
 
 	/* Print number of host up */
 	cout << "[@] " << pair_addr.size() << " hosts up. " << endl;
