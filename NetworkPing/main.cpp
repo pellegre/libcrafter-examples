@@ -4,7 +4,6 @@
  */
 #include <iostream>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include <crafter.h>
 
 /* Collapse namespaces */
@@ -14,7 +13,7 @@ using namespace Crafter;
 int main() {
 
 	/* Set the interface */
-	string iface = "wlan0";
+	string iface = "eth0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
@@ -37,7 +36,7 @@ int main() {
     /* ---------------------------------------------- */
 
 	/* Define the network to scan */
-	vector<string> net = GetIPs("192.168.0.*");    // <-- Create a container of IP addresses from a "wildcard"
+	vector<string> net = GetIPs("10.73.36.194-255");    // <-- Create a container of IP addresses from a "wildcard"
 	vector<string>::iterator it_IP;                      // <-- Iterator
 
 	/* Create a container of pointers to packets to hold all the ICMP packets */
