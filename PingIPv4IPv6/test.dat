@@ -1,0 +1,16 @@
+< Ethernet (14 bytes) :: DestinationMAC = 11:22:33:44:55:66 , SourceMAC = aa:bb:cc:dd:ee:ff , Type = 0x800 , Payload = >
+< IP (20 bytes) :: Version = 4 , HeaderLength = 5 , DiffServicesCP = 0 , ExpCongestionNot = 0 , TotalLength = 0 , Identification = 0x0 , Flags = 2 , FragmentOffset = 0 , TTL = 64 , Protocol = 0x6 , CheckSum = 0x0 , SourceIP = 192.168.0.103 , DestinationIP = 192.168.0.1 , Payload = >
+< TCP (20 bytes) :: SrcPort = 1089 , DstPort = 38817 , SeqNumber = 0 , AckNumber = 0 , DataOffset = 5 , Reserved = 0 , Flags = ( SYN ECE CWR ) , WindowsSize = 5840 , CheckSum = 0x0 , UrgPointer = 0 , Payload = >
+  11223344 5566AABB CCDDEEFF 08004500  ."3DUf........E. 00000000
+  00280000 40004006 B917C0A8 0067C0A8  .(..@.@......g.. 00000010
+  00010441 97A10000 00000000 000050C2  ...A..........P. 00000020
+  16D07AB7 0000                        ..z...           00000030
+\x11\x22\x33\x44\x55\x66\xaa\xbb\xcc\xdd\xee\xff\x8\x0\x45\x0\x0\x28\x0\x0\x40\x0\x40\x6\xb9\x17\xc0\xa8\x0\x67\xc0\xa8\x0\x1\x4\x41\x97\xa1\x0\x0\x0\x0\x0\x0\x0\x0\x50\xc2\x16\xd0\x7a\xb7\x0\x0
+< Ethernet (14 bytes) :: DestinationMAC = 11:22:33:44:55:66 , SourceMAC = aa:bb:cc:dd:ee:ff , Type = 0x800 , Payload = >
+< IP (20 bytes) :: Version = 4 , HeaderLength = 5 , DiffServicesCP = 0 , ExpCongestionNot = 0 , TotalLength = 40 , Identification = 0x0 , Flags = 2 , FragmentOffset = 0 , TTL = 64 , Protocol = 0x6 , CheckSum = 0xb917 , SourceIP = 192.168.0.103 , DestinationIP = 192.168.0.1 , Payload = >
+< TCP (20 bytes) :: SrcPort = 1089 , DstPort = 38817 , SeqNumber = 0 , AckNumber = 0 , DataOffset = 5 , Reserved = 0 , Flags = ( SYN ECE CWR ) , WindowsSize = 5840 , CheckSum = 0x7ab7 , UrgPointer = 0 , Payload = >
+  11223344 5566AABB CCDDEEFF 08004500  ."3DUf........E. 00000000
+  00280000 40004006 B917C0A8 0067C0A8  .(..@.@......g.. 00000010
+  00010441 97A10000 00000000 000050C2  ...A..........P. 00000020
+  16D07AB7 0000                        ..z...           00000030
+\x11\x22\x33\x44\x55\x66\xaa\xbb\xcc\xdd\xee\xff\x8\x0\x45\x0\x0\x28\x0\x0\x40\x0\x40\x6\xb9\x17\xc0\xa8\x0\x67\xc0\xa8\x0\x1\x4\x41\x97\xa1\x0\x0\x0\x0\x0\x0\x0\x0\x50\xc2\x16\xd0\x7a\xb7\x0\x0

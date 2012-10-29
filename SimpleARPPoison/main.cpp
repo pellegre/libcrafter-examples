@@ -30,7 +30,7 @@ int main() {
 	string MyMAC = GetMyMAC(iface);
 
 	/* Host A IP address */
-	string hostA = "192.168.0.101";
+	string hostA = "192.168.0.112";
 	/* HOst B IP address */
 	string hostB = "192.168.0.1";
 

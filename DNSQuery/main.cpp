@@ -15,6 +15,11 @@ using namespace std;
 using namespace Crafter;
 
 int main() {
+	/* Bind DNS to UDP src port 53 or UDP dst port 53 */
+	UDP udp_src; udp_src.SetSrcPort(53);
+	UDP udp_dst; udp_dst.SetDstPort(53);
+	Layer::Bind(udp_src,DNS::PROTO);
+	Layer::Bind(udp_dst,DNS::PROTO);
 
 	/* Set the interface */
 	string iface = "wlan0";
@@ -58,17 +63,10 @@ int main() {
 	Packet* rcv = packet.SendRecv(iface);
 
 	if(rcv) {
-		/*
-		 * An application protocol is always get from the network as a raw layer. There is
-		 * no way to know which protocol is on the top of a transport layer (unless we rely on
-		 * standard ports numbers, which is not always the case).
-		 */
-		DNS dns_rcv;
-		/* Fill the DNS layer information from a raw layer */
-		dns_rcv.FromRaw(*(rcv->GetLayer<RawLayer>()));
-		/* Finally print the response to STDOUT */
-		dns_rcv.Print();
-		/* Delete the received packet */
+		/* Get DNS layer */
+		DNS* dns_layer = rcv->GetLayer<DNS>();
+		dns_layer->Print();
+
 		delete rcv;
 	} else
 		cout << "[@] No response from DNS server" << endl;

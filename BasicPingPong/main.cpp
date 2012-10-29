@@ -17,7 +17,7 @@ using namespace Crafter;
 int main() {
 
 	/* Set the interface */
-	string iface = "wlan0";
+	string iface = "tun0";
 
 	/* Get the IP address associated to the interface */
 	string MyIP = GetMyIP(iface);
