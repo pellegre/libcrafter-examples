@@ -28,5 +28,6 @@ FOLDERS="HelloWorld
          SimpleHijackConnection
          UserSockets
          ARPPingL2Socket
+         IPv6RoutingHeader
         "
 
