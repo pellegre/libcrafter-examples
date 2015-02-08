@@ -10,6 +10,21 @@
 using namespace std;
 using namespace Crafter;
 
+void test_packet(const char *test_title, Packet &packet) {
+    cout << "Testing: " << test_title << endl;
+    packet.PreCraft();
+    cout << "Original packet:" << endl;
+    packet.Print();
+    
+    /* Decode it */
+    Packet decoded;
+    decoded.Decode(packet.GetRawPtr(), packet.GetSize(), IPv6::PROTO);
+    cout << "Decoded packet:" << endl;
+    decoded.Print();
+
+    cout << endl;
+}
+
 int main() {
     /* Create an IP header */
     IPv6 ip_header;
@@ -35,15 +50,14 @@ int main() {
     
     /* Create a packet... */
     Packet packet = ip_header / sr_header / tcp_header / payload;
-    packet.PreCraft();
-    cout << "Original packet:" << endl;
-    packet.Print();
-    
-    /* Decode it */
-    Packet decoded;
-    decoded.Decode(packet.GetRawPtr(), packet.GetSize(), IPv6::PROTO);
-    cout << "Decoded packet:" << endl;
-    decoded.Print();
+    test_packet("Segment Routing header", packet);
+
+    /* Same test for the mobile routing header */
+    IPv6MobileRoutingHeader mr_header;
+    mr_header.SetHomeAddress("2001:db8::1");
+
+    packet = ip_header / mr_header / tcp_header / payload;
+    test_packet("Mobile Routing header", packet);
     
     return 0;
 }
