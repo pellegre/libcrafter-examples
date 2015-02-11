@@ -15,12 +15,16 @@ void test_packet(const char *test_title, Packet &packet) {
     packet.PreCraft();
     cout << "Original packet:" << endl;
     packet.Print();
-    
+    packet.HexDump(cout);
+    cout << endl;
+
     /* Decode it */
     Packet decoded;
     decoded.Decode(packet.GetRawPtr(), packet.GetSize(), IPv6::PROTO);
     cout << "Decoded packet:" << endl;
     decoded.Print();
+    decoded.HexDump(cout);
+    cout << endl;
 
     cout << endl;
 }
@@ -37,17 +41,20 @@ int main() {
     sr_header.PushIPv6Segment("2001:db8:1234::3");
     sr_header.PushIPv6Segment("2001:db8:1234::4");
     sr_header.PushIPv6Segment("2001:db8:1234::5");
-    sr_header.PolicyList[2].type = IPv6SegmentRoutingHeader::SRPolicy::SRPOLICY_EGRESS;
-    sr_header.PolicyList[2].policy[6] = 0xff;
-    sr_header.SetCFlag(1);
+    /* Setting a policy in a _nice_ way */
+    sr_header.SetPolicy(3, "dead:beef::", IPv6SegmentRoutingHeader::POLICY_EGRESS);
+    /* Or by acessing to the byte arrays directly */
+    sr_header.SetPolicyFlag1(IPv6SegmentRoutingHeader::POLICY_SOURCE_ADDRESS);
+    sr_header.PolicyList[0][2] = 0xff;
+    sr_header.SetPFlag(1);
     sr_header.SetHMACKeyID(5);
     sr_header.HMAC[15] = 0xff;
-    
+
     /* Dummy TCP header */
     TCP tcp_header;
     /* Dummy Payload */
     RawLayer payload("Hello World!");
-    
+
     /* Create a packet... */
     Packet packet = ip_header / sr_header / tcp_header / payload;
     test_packet("Segment Routing header", packet);
@@ -58,6 +65,6 @@ int main() {
 
     packet = ip_header / mr_header / tcp_header / payload;
     test_packet("Mobile Routing header", packet);
-    
+
     return 0;
 }
