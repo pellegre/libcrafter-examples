@@ -28,7 +28,7 @@ int main() {
     tcp_header.SetFlags(TCP::SYN);
 
     /* EDO size option */
-    TCPOptionExtendedDataOffsetRequest edo;
+    TCPEDORequest edo;
 
 
     /* Dummy Payload */
