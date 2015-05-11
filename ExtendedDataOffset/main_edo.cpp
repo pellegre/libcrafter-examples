@@ -25,16 +25,20 @@ int main() {
     tcp_header.SetSrcPort(RNG16());
     tcp_header.SetDstPort(22);
     tcp_header.SetSeqNumber(RNG32());
-    //tcp_header.SetFlags(TCP::SYN);
+
+    TCPOptionPad nop = TCPOption::NOP;
 
     /* EDO size option */
-    TCPOptionExtendedDataOffset edo;
+    TCPEDO edo;
+
+    /* MSS */
+    TCPOptionMaxSegSize mss;
 
     /* Dummy Payload */
     RawLayer payload("Hello World!");
     
     /* Create a packet... */
-    Packet packet = ip_header / tcp_header /  TCPOption::NOP /TCPOption::NOP / edo  / TCPOption::NOP /TCPOption::NOP / TCPOption::NOP /TCPOption::NOP / payload;
+    Packet packet = ip_header / tcp_header / edo / nop / nop / nop / nop / nop / nop / nop / nop / nop / nop / nop / nop / nop / nop / mss / payload;
     packet.PreCraft();
     cout << "Original packet:" << endl;
     packet.Print();
