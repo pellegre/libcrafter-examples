@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <crafter.h>
+#include <crafter/Utils/TCPConnection.h>
 
 /* Collapse namespaces */
 using namespace std;
