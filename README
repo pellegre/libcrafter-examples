@@ -2,9 +2,9 @@
 
 For compiling (each example) you should do:
 
-$ g++ main.cpp -o exe -lcrafter
+$ g++ main.cpp -o exe -lcrafter -lpcap -lpthread -lresolv
 
-You need root privileges for running the programs:
+You need root privileges for running some of the programs:
 $ sudo ./exe
 
 If something doesn't works as expected, check the interface
