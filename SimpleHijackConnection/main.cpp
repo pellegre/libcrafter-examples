@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <crafter.h>
+#include <crafter/Utils/TCPConnection.h>
 
 /* Collapse namespaces */
 using namespace std;
@@ -17,6 +18,7 @@ void clear_block(const string& dst_ip, const string& src_ip, int dst_port, int s
 /* Put and clear IP forwarding */
 void clear_forward();
 
+void ip_forward();
 /* Source port that we have to find out */
 short_word srcport = 0;
 
