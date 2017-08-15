@@ -7,6 +7,10 @@ $ g++ main.cpp -o exe -lcrafter -lpcap -lpthread -lresolv
 You need root privileges for running some of the programs:
 $ sudo ./exe
 
+Compiling with cmake:
+$ cmake .
+$ make
+
 If something doesn't works as expected, check the interface
 name or the IP address range provided on the source code of
 the example.
